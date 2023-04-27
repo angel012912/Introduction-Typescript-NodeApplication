@@ -1,49 +1,44 @@
-/*
-Author: Jose Angel Garcia Gomez
-Date: 13-04-2023
-Description: This file contains the server class
-*/
-
-import express, { Request, Response } from "express";
-import AbstractController from "../controllers/AbstractControllers";
+import express, {Request, Response} from 'express';
+import AbstractController from '../controllers/AbstractController';
+import db from '../models';
 
 class Server{
-    /* Attributes */
-    private app: express.Application;
-    private port: number;
-    private env: string;
+    //Atributos
+    private app:express.Application;
+    private port:number;
+    private env:string;
 
-    /* Methods */
-
-    // Constructor
-    constructor(appInit:{port:number, env:string, middleWares:any[], controllers:AbstractController[]}){
-        this.app = express();
-        this.port = appInit.port;
-        this.env = appInit.env;
-        this.loadMiddleWares(appInit.middleWares);
-        this.loadControllers(appInit.controllers);
+    //Metodos
+    constructor(appInit:{port:number,env:string;middlewares:any[],controllers:AbstractController[]}){
+        this.app=express();
+        this.port=appInit.port;
+        this.env=appInit.env; 
+        this.loadMiddlewares(appInit.middlewares);  
+        this.loadControllers(appInit.controllers);   
     }
-    
-    // Load middlewares automatically
-    private loadMiddleWares(middleWares:any[]):void{
-        middleWares.forEach((middleWare:any) => {
-            this.app.use(middleWare);
+
+    private loadMiddlewares(middlewares:any[]):void{
+        middlewares.forEach((middleware:any)=>{
+            this.app.use(middleware);
         })
     }
 
-    // Load controllers automatically
-    private loadControllers(controllers:AbstractController[]):void{
-        controllers.forEach((controller:AbstractController) => {
-            this.app.use(`/${controller.prefix}`, controller.router);
+    private loadControllers(controllers:AbstractController[]){
+        controllers.forEach((controller:AbstractController)=>{
+            this.app.use(`/${controller.prefix}`,controller.router);
         })
     }
 
-    // Start the server
-    public init():void{
-        this.app.listen(this.port, () => {
-            console.log(`Server: Running @'http://localhost:${this.port}'`);
+    public async init(){
+        await db.sequelize.sync();
+        this.app.listen(this.port,()=>{
+            console.log(`Server:Running 🚀 @'http://localhost:${this.port}'`)
         })
+
+        //db.sequelize.sync()
+        //    .then()
     }
+
 }
 
 export default Server;

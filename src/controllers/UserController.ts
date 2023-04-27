@@ -1,40 +1,33 @@
-/**
- * Author: Jose Angel Garcia Gomez
- * Date: 18-04-2023
- * Description: This file contains the UserController class
- */
-
-import { Request, Response } from "express";
-import AbstractController from "./AbstractControllers";
+import { Request,Response } from "express";
+import AbstractController from "./AbstractController";
 
 class UserController extends AbstractController{
-    
-    /* Attributes */
-    private static instance: UserController;
-    
-    /* Methods */
-
-    // Singleton
-    public static getInstance(): AbstractController{
-        if(!this.instance){
-            this.instance = new UserController('user');
+        
+    //Singleton
+    private static instance:UserController;
+    public static getInstance():AbstractController{
+        //si existe la instancia la regreso
+        if(this.instance){
+            return this.instance;
         }
+        //si no exite la creo
+        this.instance = new UserController('user');
         return this.instance;
+    } 
+
+    //Configurar las rutas del controlador
+    protected initRoutes(): void {
+        this.router.get("/readUsers",this.getReadUsers.bind(this));
+        this.router.post("/createUser",this.postCreateUser.bind(this));
     }
 
-    /* Routes definition and configuration*/
-    protected initializeRoutes(): void {
-        this.router.get('/readUsers', this.getReadUsers.bind(this));
-        this.router.post('/createUser', this.postCreateUser.bind(this));
+    //Los métodos asociados a las rutas
+    private getReadUsers(req:Request,res:Response){
+        res.status(200).send("Servicio en línea  😄");
     }
 
-    /* Routes Methods */
-    private getReadUsers(req: Request, res: Response): void{
-        res.status(200).send('Servicio en linea');
-    }
-
-    private postCreateUser(req: Request, res: Response): void{
-        res.status(200).send('Registro exitoso');
+    private postCreateUser(req:Request,res:Response){
+        res.status(200).send("Registro exitoso");
     }
 }
 
